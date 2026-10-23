@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JorPlay</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ps4: '#003791',
+                        ps5: '#0070d1',
+                        xbox: '#107c10',
+                        switch: '#e60012',
+                        darkBg: '#090d16',
+                        darkCard: '#121826',
+                        darkHover: '#1c253b',
+                        neonBlue: '#00f0ff',
+                        neonPurple: '#a855f7'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #090d16;
+            color: #f3f4f6;
+        }
+        .glow-ps4 { box-shadow: 0 0 20px rgba(0, 55, 145, 0.4); }
+        .glow-ps5 { box-shadow: 0 0 20px rgba(0, 112, 209, 0.4); }
+        .glow-xbox { box-shadow: 0 0 20px rgba(16, 124, 16, 0.4); }
+        .glow-switch { box-shadow: 0 0 20px rgba(230, 0, 18, 0.4); }
+        .glow-neon { box-shadow: 0 0 25px rgba(0, 240, 255, 0.25); }
+        .glass {
+            background: rgba(18, 24, 38, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .text-gradient {
+            background: linear-gradient(135deg, #00f0ff 0%, #a855f7 100%);
+            -webkit-backdrop-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f0ff;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-40 glass border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('hero')">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-cyan-500 via-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                        <i class="fa-solid font-bold text-2xl text-white fa-gamepad"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-wider text-white">Gaming Store Web</span>
+                        <span class="block text-[10px] text-cyan-400 font-bold tracking-widest uppercase -mt-1">Mega Store & Universe</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden lg:flex space-x-1">
+                    <button onclick="switchTab('hero')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-white/10 text-cyan-400" id="nav-hero">Inicio</button>
+                    <button onclick="switchTab('ps4')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-ps4/30 text-gray-300 hover:text-white" id="nav-ps4"><i class="fa-brands fa-playstation text-blue-500 mr-1.5"></i>PS4</button>
+                    <button onclick="switchTab('ps5')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-ps5/30 text-gray-300 hover:text-white" id="nav-ps5"><i class="fa-brands fa-playstation text-cyan-400 mr-1.5"></i>PS5</button>
+                    <button onclick="switchTab('xbox')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-xbox/30 text-gray-300 hover:text-white" id="nav-xbox"><i class="fa-brands fa-xbox text-green-500 mr-1.5"></i>Xbox</button>
+                    <button onclick="switchTab('switch')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-switch/30 text-gray-300 hover:text-white" id="nav-switch"><i class="fa-solid fa-gamepad text-red-500 mr-1.5"></i>Switch</button>
+                    <button onclick="switchTab('games')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-white/10 text-gray-300 hover:text-white" id="nav-games">Catálogo (+100)</button>
+                    <button onclick="switchTab('videos')" class="nav-btn px-3 py-2 rounded-xl text-xs font-bold transition hover:bg-white/10 text-gray-300 hover:text-white" id="nav-videos"><i class="fa-brands fa-youtube text-red-600 mr-1"></i>Tráilers</button>
+                </nav>
+
+                <!-- Right Action Bar -->
+                <div class="hidden sm:flex items-center space-x-3">
+                    <!-- Global Search -->
+                    <div class="relative">
+                        <input type="text" id="global-search" onkeyup="handleSearch(this.value)" placeholder="Buscar 100+ juegos..." class="bg-gray-900/90 text-xs text-gray-200 rounded-full pl-9 pr-4 py-2 border border-gray-700 focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition w-44 lg:w-56">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400 text-xs"></i>
+                    </div>
+
+                    <!-- Cart Trigger -->
+                    <button onclick="openCartModal()" class="relative p-2.5 rounded-xl bg-gray-900 border border-gray-700 hover:border-cyan-500 text-gray-300 hover:text-white transition">
+                        <i class="fa-solid fa-cart-shopping text-sm"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-cyan-500 text-black text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                    </button>
+
+                    <!-- Auth Button Container -->
+                    <div id="auth-container">
+                        <button onclick="openAuthModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white transition shadow-lg shadow-cyan-500/20 flex items-center space-x-1.5">
+                            <i class="fa-solid fa-user"></i>
+                            <span>Ingresar</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Icon -->
+                <div class="flex lg:hidden items-center space-x-2">
+                    <button onclick="openCartModal()" class="p-2.5 rounded-xl bg-gray-900 border border-gray-700 text-gray-300">
+                        <i class="fa-solid fa-cart-shopping"></i>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="p-2.5 rounded-xl bg-gray-900 border border-gray-700 text-gray-300">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu Container -->
+        <div id mobile-menu id="mobile-menu" class="hidden lg:hidden border-t border-gray-800 bg-darkCard px-4 pt-3 pb-6 space-y-2">
+            <input type="text" onkeyup="handleSearch(this.value)" placeholder="Buscar por título, género..." class="w-full bg-gray-900 text-xs text-gray-200 rounded-lg px-4 py-2.5 border border-gray-700 mb-2">
+            <button onclick="switchTab('hero'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-300 hover:bg-gray-800">Inicio</button>
+            <button onclick="switchTab('ps4'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-blue-400 hover:bg-gray-800"><i class="fa-brands fa-playstation mr-2"></i>PS4 (25+ Juegos)</button>
+            <button onclick="switchTab('ps5'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-cyan-400 hover:bg-gray-800"><i class="fa-brands fa-playstation mr-2"></i>PS5 (25+ Juegos)</button>
+            <button onclick="switchTab('xbox'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-green-400 hover:bg-gray-800"><i class="fa-brands fa-xbox mr-2"></i>Xbox Series / One (25+)</button>
+            <button onclick="switchTab('switch'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-red-400 hover:bg-gray-800"><i class="fa-solid fa-gamepad mr-2"></i>Nintendo Switch (25+)</button>
+            <button onclick="switchTab('games'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-gray-800">Catálogo Completo (+100)</button>
+            <button onclick="switchTab('videos'); toggleMobileMenu()" class="block w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-gray-200 hover:bg-gray-800"><i class="fa-brands fa-youtube text-red-500 mr-2"></i>Vídeos Promocionales</button>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+        <!-- VIEW 1: HERO HOME -->
+        <section id="view-hero" class="space-y-12">
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden border border-gray-800 bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 p-8 sm:p-12 lg:p-16 glow-neon">
+                <div class="relative z-10 max-w-3xl space-y-6">
+                    <span class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-widest uppercase bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                        <i class="fa-solid fa-fire text-yellow-400"></i> +100 Títulos Reales Verificados
+                    </span>
+                    <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white leading-tight">
+                        La Enciclopedia Gamer Definitiva de <spanclass="text-gradient">PS4, PS5, Xbox y Switch</span>
+                    </h1>
+                    <p class="text-gray-300 text-sm sm:text-base leading-relaxed">
+                        Explora la colección más grande de videojuegos con precios actualizados en USD, imágenes de alta resolución verfijadas, tráilers promocionales oficiales y carrito de compras integrado.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-2">
+                        <button onclick="switchTab('games')" class="px-6 py-3.5 rounded-xl font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition shadow-lg shadow-cyan-500/25 flex items-center space-x-2 text-sm">
+                            <i class="fa-solid fa-border-all"></i>
+                            <span>Ver Catálogo Completo (+100)</span>
+                        </button>
+                        <button onclick="switchTab('videos')" class="px-6 py-3.5 rounded-xl font-bold bg-darkCard border border-gray-700 hover:bg-gray-800 text-white transition flex items-center space-x-2 text-sm">
+                            <i class="fa-brands fa-youtube text-red-500 text-base"></i>
+                            <span>Ver Tráilers Oficiales</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Platform Selector Banner -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- PS4 -->
+                <div onclick="switchTab('ps4')" class="cursor-pointer group rounded-2xl bg-darkCard border border-blue-900/40 p-6 hover:border-ps4 transition duration-300 glow-ps4">
+                    <div class="flex justify-between items-start">
+                        <i class="fa-brands fa-playstation text-4xl text-blue-500 group-hover:scale-110 transition"></i>
+                        <span class="text-[10px] font-bold bg-blue-950 text-blue-300 px-2.5 py-1 rounded-full border border-blue-800">25+ JUEGOS</span>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4 text-white">PlayStation 4</h3>
+                    <p class="text-xs text-gray-400 mt-1">Éxitos de ventas mundiales y joyas narrativas.</p>
+                </div>
+                <!-- PS5 -->
+                <div onclick="switchTab('ps5')" class="cursor-pointer group rounded-2xl bg-darkCard border border-cyan-900/40 p-6 hover:border-ps5 transition duration-300 glow-ps5">
+                    <div class="flex justify-between items-start">
+                        <i class="fa-brands fa-playstation text-4xl text-cyan-400 group-hover:scale-110 transition"></i>
+                        <span class="text-[10px] font-bold bg-cyan-950 text-cyan-300 px-2.5 py-1 rounded-full border border-cyan-800">25+ JUEGOS</span>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4 text-white">PlayStation 5</h3>
+                    <p class="text-xs text-gray-400 mt-1">Potencia gráfica 4K, SSD y DualSense.</p>
+                </div>
+                <!-- Xbox -->
+                <div onclick="switchTab('xbox')" class="cursor-pointer group rounded-2xl bg-darkCard border border-green-900/40 p-6 hover:border-xbox transition duration-300 glow-xbox">
+                    <div class="flex justify-between items-start">
+                        <i class="fa-brands fa-xbox text-4xl text-green-500 group-hover:scale-110 transition"></i>
+                        <span class="text-[10px] font-bold bg-green-950 text-green-300 px-2.5 py-1 rounded-full border border-green-800">25+ JUEGOS</span>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4 text-white">Xbox Series / One</h3>
+                    <p class="text-xs text-gray-400 mt-1">Velocidad, rendimiento y Game Pass.</p>
+                </div>
+                <!-- Switch -->
+                <div onclick="switchTab('switch')" class="cursor-pointer group rounded-2xl bg-darkCard border border-red-900/40 p-6 hover:border-switch transition duration-300 glow-switch">
+                    <div class="flex justify-between items-start">
+                        <i class="fa-solid fa-gamepad text-4xl text-red-500 group-hover:scale-110 transition"></i>
+                        <span class="text-[10px] font-bold bg-red-950 text-red-300 px-2.5 py-1 rounded-full border border-red-800">25+ JUEGOS</span>
+                    </div>
+                    <h3 class="text-xl font-bold mt-4 text-white">Nintendo Switch</h3>
+                    <p class="text-xs text-gray-400 mt-1">Diversión portátil y exclusivas de Nintendo.</p>
+                </div>
+            </div>
+
+            <!-- Featured Showcase Grid -->
+            <div class="space-y-6">
+                <div class="flex justify-between items-end border-b border-gray-800 pb-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Títulos Destacados Mundiales</h2>
+                        <p class="text-gray-400 text-xs">Juegos con puntuación perfecta e imágenes de alta resolución.</p>
+                    </div>
+                    <button onclick="switchTab('games')" class="text-cyan-400 hover:text-cyan-300 text-xs font-bold flex items-center">
+                        Ver todos (+100) <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+                <div id="featured-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: PS4 SECTION -->
+        <section id="view-ps4" class="hidden space-y-8">
+            <div class="rounded-3xl bg-gradient-to-r from-blue-950 via-darkCard to-darkCard p-8 border border-ps4/40 glow-ps4 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-brands fa-playstation text-4xl text-blue-500"></i>
+                        <h1 class="text-3xl font-black text-white">Catálogo PlayStation 4</h1>
+                    </div>
+                    <p class="text-gray-300 text-sm max-w-2xl">Más de 25 títulos de los más premiados de la generación PS4 con precios actualizados y caratulas HD.</p>
+                </div>
+                <span class="px-4 py-2 bg-blue-900/50 text-blue-300 text-xs font-bold rounded-xl border border-blue-700/50">25+ Títulos Disponibles</span>
+            </div>
+            <div id="ps4-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- VIEW 3: PS5 SECTION -->
+        <section id="view-ps5" class="hidden space-y-8">
+            <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-darkCard to-blue-950 p-8 border border-ps5/40 glow-ps5 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-brands fa-playstation text-4xl text-cyan-400"></i>
+                        <h1 class="text-3xl font-black text-white">Catálogo PlayStation 5</h1>
+                    </div>
+                    <p class="text-gray-300 text-sm max-w-2xl">Experiencias de nueva generación con trazado de rayos, cargas instantáneas y gráficos espectaculares.</p>
+                </div>
+                <span class="px-4 py-2 bg-cyan-900/50 text-cyan-300 text-xs font-bold rounded-xl border border-cyan-700/50">25+ Títulos Disponibles</span>
+            </div>
+            <div id="ps5-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- VIEW 4: XBOX SECTION -->
+        <section id="view-xbox" class="hidden space-y-8">
+            <div class="rounded-3xl bg-gradient-to-r from-emerald-950 via-darkCard to-darkCard p-8 border border-xbox/40 glow-xbox flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-brands fa-xbox text-4xl text-green-500"></i>
+                        <h1 class="text-3xl font-black text-white">Catálogo Xbox Series & One</h1>
+                    </div>
+                    <p class="text-gray-300 text-sm max-w-2xl">La mayor potencia y velocidad de Microsoft con juegos icónicos y títulos multipropósito.</p>
+                </div>
+                <span class="px-4 py-2 bg-green-900/50 text-green-300 text-xs font-bold rounded-xl border border-green-700/50">25+ Títulos Disponibles</span>
+            </div>
+            <div id="xbox-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- VIEW 5: SWITCH SECTION -->
+        <section id="view-switch" class="hidden space-y-8">
+            <div class="rounded-3xl bg-gradient-to-r from-red-950 via-darkCard to-darkCard p-8 border border-switch/40 glow-switch flex flex-col md:flex-row items-center justify-between gap-6">
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i class="fa-solid fa-gamepad text-4xl text-red-500"></i>
+                        <h1 class="text-3xl font-black text-white">Catálogo Nintendo Switch</h1>
+                    </div>
+                    <p class="text-gray-300 text-sm max-w-2xl">Juegos legendarios para llevar a donde quieras: Mario, Zelda, Pokémon y sorpresas indie.</p>
+                </div>
+                <span class="px-4 py-2 bg-red-900/50 text-red-300 text-xs font-bold rounded-xl border border-red-700/50">25+ Títulos Disponibles</span>
+            </div>
+            <div id="switch-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- VIEW 6: ALL GAMES CATALOG (+100) -->
+        <section id="view-games" class="hidden space-y-6">
+            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 border-b border-gray-800 pb-6">
+                <div>
+                    <h1 class="text-3xl font-black text-white">Catálogo Completo (+100 Videojuegos)</h1>
+                    <p class="text-gray-400 text-xs">Usa los filtros avanzados para encontrar títulos por precio, consola y categoría.</p>
+                </div>
+
+                <!-- Filters Bar -->
+                <div class="flex flex-wrap gap-2 items-center">
+                    <!-- Platform Filter -->
+                    <select id="filter-platform" onchange="applyAdvancedFilters()" class="bg-gray-900 text-xs text-white border border-gray-700 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                        <option value="all">Todas las consolas</option>
+                        <option value="ps4">PS4</option>
+                        <option value="ps5">PS5</option>
+                        <option value="xbox">Xbox</option>
+                        <option value="switch">Nintendo Switch</option>
+                    </select>
+
+                    <!-- Price Filter -->
+                    <select id="filter-price" onchange="applyAdvancedFilters()" class="bg-gray-900 text-xs text-white border border-gray-700 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                        <option value="all">Todos los precios</option>
+                        <option value="under20">Menos de $20</option>
+                        <option value="20to40">$20 - $40</option>
+                        <option value="over40">Más de $40</option>
+                    </select>
+
+                    <!-- Genre Filter -->
+                    <select id="filter-genre" onchange="applyAdvancedFilters()" class="bg-gray-900 text-xs text-white border border-gray-700 rounded-xl px-3 py-2 focus:outline-none focus:border-cyan-500">
+                        <option value="all">Todos los géneros</option>
+                        <option value="Acción">Acción</option>
+                        <option value="Aventura">Aventura</option>
+                        <option value="RPG">RPG</option>
+                        <option value="Deportes">Deportes / Carreras</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="all-games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+        </section>
+
+        <!-- VIEW 7: YOUTUBE TRAILERS -->
+        <section id="view-videos" class="hidden space-y-8">
+            <div class="border-b border-gray-800 pb-4">
+                <h1 class="text-3xl font-black text-white">Vídeos y Tráilers Promocionales</h1>
+                <p class="text-gray-400 text-xs">Avances de consolas e introducciones oficiales de PlayStation, Xbox y Nintendo.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- PS4 Video -->
+                <div class="bg-darkCard rounded-2xl border border-blue-900/50 overflow-hidden shadow-xl">
+                    <div class="relative pt-[56.25%]">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/0mBbhA36TjU" title="PS4 Trailer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-4 flex items-center justify-between border-t border-gray-800">
+                        <span class="font-bold text-white text-sm"><i class="fa-brands fa-playstation text-blue-500 mr-2"></i>PlayStation 4 Official Launch</span>
+                        <span class="px-2 py-0.5 rounded bg-blue-950 text-blue-300 text-[10px] font-bold">PS4</span>
+                    </div>
+                </div>
+
+                <!-- PS5 Video -->
+                <div class="bg-darkCard rounded-2xl border border-cyan-900/50 overflow-hidden shadow-xl">
+                    <div class="relative pt-[56.25%]">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/RkC0l4iekYo" title="PS5 Trailer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-4 flex items-center justify-between border-t border-gray-800">
+                        <span class="font-bold text-white text-sm"><i class="fa-brands fa-playstation text-cyan-400 mr-2"></i>PlayStation 5 Hardware Showcase</span>
+                        <span class="px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 text-[10px] font-bold">PS5</span>
+                    </div>
+                </div>
+
+                <!-- Xbox Video -->
+                <div class="bg-darkCard rounded-2xl border border-green-900/50 overflow-hidden shadow-xl">
+                    <div class="relative pt-[56.25%]">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/0tUqIHwHDEc" title="Xbox Trailer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-4 flex items-center justify-between border-t border-gray-800">
+                        <span class="font-bold text-white text-sm"><i class="fa-brands fa-xbox text-green-500 mr-2"></i>Xbox Series X Reveal</span>
+                        <span class="px-2 py-0.5 rounded bg-green-950 text-green-300 text-[10px] font-bold">Xbox</span>
+                    </div>
+                </div>
+
+                <!-- Switch Video -->
+                <div class="bg-darkCard rounded-2xl border border-red-900/50 overflow-hidden shadow-xl">
+                    <div class="relative pt-[56.25%]">
+                        <iframe class="absolute inset-0 w-full h-full" src="https://www.youtube.com/embed/f5uik5fgc00" title="Switch Trailer" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-4 flex items-center justify-between border-t border-gray-800">
+                        <span class="font-bold text-white text-sm"><i class="fa-solid fa-gamepad text-red-500 mr-2"></i>Nintendo Switch First Look</span>
+                        <span class="px-2 py-0.5 rounded bg-red-950 text-red-300 text-[10px] font-bold">Switch</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: GAME DETAILS -->
+    <div id="game-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+        <div class="bg-darkCard border border-gray-700 rounded-3xl max-w-2xl w-full overflow-hidden shadow-2xl relative">
+            <button onclick="closeGameModal()" class="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-black/70 text-white hover:bg-black flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div id="modal-content"></div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: SHOPPING CART -->
+    <div id="cart-modal" class="fixed inset-0 z-50 hidden flex items-center justify-end bg-black/80 backdrop-blur-sm">
+        <div class="bg-darkCard border-l border-gray-800 w-full max-w-md h-full flex flex-col p-6 space-y-6">
+            <div class="flex justify-between items-center border-b border-gray-800 pb-4">
+                <h2 class="text-xl font-black text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-cyan-400"></i> Mi Carrito Gamer
+                </h2>
+                <button onclick="closeCartModal()" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Cart items list -->
+            <div id="cart-items" class="flex-grow overflow-y-auto space-y-4 pr-1"></div>
+
+            <!-- Total and checkout -->
+            <div class="border-t border-gray-800 pt-4 space-y-4">
+                <div class="flex justify-between items-center text-lg font-bold text-white">
+                    <span>Total Estimado:</span>
+                    <span id="cart-total" class="text-cyan-400 font-black">$0.00</span>
+                </div>
+                <button onclick="checkoutCart()" class="w-full py-3.5 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 text-sm">
+                    Proceder al Pago
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: AUTHENTICATION -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-darkCard border border-gray-700 rounded-3xl max-w-md w-full p-6 sm:p-8 relative shadow-2xl">
+            <button onclick="closeAuthModal()" class="absolute top-4 right-4 w-8 h-8 rounded-full bg-gray-800 text-gray-400 hover:text-white flex items-center justify-center transition">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="flex border-b border-gray-800 mb-6">
+                <button id="auth-tab-login" onclick="switchAuthMode('login')" class="flex-1 py-3 font-bold text-cyan-400 border-b-2 border-cyan-400 text-center text-sm">Iniciar Sesión</button>
+                <button id="auth-tab-register" onclick="switchAuthMode('register')" class="flex-1 py-3 font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-200 text-center text-sm">Registrarse</button>
+            </div>
+
+            <form id="form-login" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Nombre de Usuario</label>
+                    <input type="text" id="login-user" required placeholder="GamerPro2026" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" id="login-pass" required placeholder="••••••••" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-cyan-500 hover:bg-cyan-400 text-black font-bold rounded-xl transition text-xs uppercase tracking-wider">
+                    Acceder
+                </button>
+            </form>
+
+            <form id="form-register" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Nombre de Usuario</label>
+                    <input type="text" id="reg-user" required placeholder="MasterGamer" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Correo Electrónico</label>
+                    <input type="email" id="reg-email" required placeholder="usuario@gaming.com" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-gray-400 mb-1">Contraseña</label>
+                    <input type="password" id="reg-pass" required placeholder="••••••••" class="w-full bg-gray-900 border border-gray-700 rounded-xl px-4 py-3 text-white text-xs focus:outline-none focus:border-cyan-500">
+                </div>
+                <button type="submit" class="w-full py-3 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl transition text-xs uppercase tracking-wider">
+                    Crear Cuenta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 text-white px-5 py-3.5 rounded-2xl border border-gray-700 shadow-2xl flex items-center space-x-3">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-cyan-400 text-xl"></i>
+        <span id="toast-msg" class="text-xs font-bold">Notificación</span>
+    </div>
+
+   <script>
+        // Fallback Image URL for network errors
+        const DEFAULT_FALLBACK_IMG = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=600&q=80";
+ 
+        // Helper to generate games fast with real titles, prices & imagery
+        function generateGamesDataset() {
+            const rawGames = [
+                // --- PS4 GAMES (26) ---
+                { title: 'God of War (2018)', platform: 'ps4', price: 19.99, genre: 'Acción-Aventura, Hack and Slash', rating: 4.7, img: 'God of War (2018.jpg', featured: true, },
+                { title: 'The Last of Us Part II', platform: 'ps4', price: 39.99, genre: 'Acción-Aventura, Survival Horror', rating: 4.5, img: 'The Last of Us Part II.jpg' },
+                { title: 'Bloodborne', platform: 'ps4', price: 19.99, genre: 'RPG de Acción, Soulsborne', rating: 4., img: 'Bloodborne.jpg' },
+                { title: 'Horizon Zero Dawn', platform: 'ps4', price: 19.99, genre: 'RPG de Acción, Mundo Abierto', rating: 4.7, img: 'Horizon Zero Dawn.jpg' },
+                { title: 'Uncharted 4: A Thief\'s End', platform: 'ps4', price: 19.99, genre: 'Acción-Aventura, Plataformas', rating: 4.7, img: 'Uncharted 4.jpg' },
+                { title: 'Ghost of Tsushima', platform: 'ps4', price: 59.99, genre: 'Acción-Aventura, Mundo Abierto', rating: 4.6, img: 'Ghost of Tsushima.jpg' },
+                { title: 'Persona 5 Royal', platform: 'ps4', price: 59.99, genre: 'JRPG, Rol por Turnos', rating: 4.8, img: 'Persona 5 Royal.jpg' },
+                { title: 'Red Dead Redemption 2', platform: 'ps4', price: 59.99, genre: 'Acción-Aventura, Mundo Abierto', rating: 4.7, img: 'Red Dead Redemption 2.jpg' },
+                { title: 'Spider-Man PS4', platform: 'ps4', price: 24.99, genre: 'Acción-Aventura, Mundo Abierto', rating: 4.7, img: 'Spider-Man PS4.jpg' },
+                { title: 'Death Stranding', platform: 'ps4', price: 39.99, genre: 'Acción, Exploración / Ciencia Ficción', rating: 4.2, img: 'Death Stranding.jpg' },
+                { title: 'Sekiro: Shadows Die Twice', platform: 'ps4', price: 39.99, genre: 'RPG de Acción, Soulsborne', rating: 4.7, img: 'Sekiro Shadows Die Twice.jpg' },
+                { title: 'Monster Hunter World', platform: 'ps4', price: 19.99, genre: 'RPG de Acción, Caza', rating: 4.5, img: 'Monster Hunter World.jpg' },
+                { title: 'Grand Theft Auto V', platform: 'ps4', price: 29.99, genre: 'Acción-Aventura, Mundo Abierto', rating: 4.4, img: 'Grand Theft Auto V.jpg' },
+                { title: 'The Witcher 3: Wild Hunt', platform: 'ps4', price: 24.99, genre: 'RPG de Acción, Mundo Abierto', rating: 4.8, img: 'The Witcher 3 Wild Hunt.jpg' },
+                { title: 'Detroit: Become Human', platform: 'ps4', price: 19.99, genre: 'Aventura Interactiva, Drama de C. Ficción', rating: 4.6, img: 'Detroit Become Human.jpg' },
+                { title: 'Infamous Second Son', platform: 'ps4', price: 19.99, genre: 'Acción-Aventura, Mundo Abierto', rating: 4.5, img: 'Infamous Second Son.jpg' },
+                { title: 'Ratchet & Clank (2016)', platform: 'ps4', price: 19.99, genre: 'Plataforma, Acción-Aventura', rating: 4.6, img: 'Ratchet & Clank (2016).jpg' },
+                { title: 'Days Gone', platform: 'ps4', price: 39.99, genre: 'Acción-Aventura, Survival Horror', rating: 4.4, img: 'Days Gone.jpg' },
+                { title: 'Resident Evil 2 Remake', platform: 'ps4', price: 29.99, genre: 'Survival Horror, Acción', rating: 4.7, img: 'Resident Evil 2 Remake.jpg' },
+                { title: 'Final Fantasy VII Remake', platform: 'ps4', price: 29.99, genre: 'RPG de Acción', rating: 4.7, img: 'Final Fantasy VII Remake.jpg' },
+                { title: 'Tekken 7', platform: 'ps4', price: 49.99, genre: 'Pelea, Lucha 3D', rating: 4.5, img: 'Tekken 7.jpg' },
+                { title: 'Nioh 2', platform: 'ps4', price: 39.99, genre: 'RPG de Acción, Soulsborne', rating: 4.7, img: 'Nioh 2.jpg' },
+                { title: 'Shadow of the Colossus', platform: 'ps4', price: 19.99, genre: 'Acción-Aventura, Puzzle', rating: 4.6, img: 'Shadow of the Colossus.jpg' },
+                { title: 'Gran Turismo Sport', platform: 'ps4', price: 19.99, genre: 'Carreras, Simulación', rating: 4.3, img: 'Gran Turismo Sport.jpg' },
+                { title: 'Kingdom Hearts III', platform: 'ps4', price: 59.99, genre: 'RPG de Acción', rating: 4.6, img: 'Kingdom Hearts III.jpg' },
+                { title: 'Far Cry 5', platform: 'ps4', price: 59.99, genre: 'Disparos en Primera Persona (FPS), Mundo Abierto', rating: 4.3, img: 'Far Cry 5.jpg' },
+                { title: 'Mortal Kombat 11', platform: 'ps4', price: 49.99, genre: 'Pelea, Lucha 2.5D', rating: 4.5, img: 'mortal kombat 11.jpg' },
+                { title: 'god of war 3 remastered', platform: 'ps4', price: 19.99, genre: 'Acción / Aventura (Hack and Slash)', rating: 4.7, img: 'god of war 3 remastered.jpg' },
+
+                // --- PS5 GAMES (25) ---
+                { title: 'Dragon ball sparking zero', platform: 'ps5', price: 69.99, genre: 'Acción', rating: 4.9, img: 'dragon ball sparking zero.jpg', featured: true },
+                { title: 'Marvel\'s Spider-Man 2', platform: 'ps5', price: 69.99, genre: 'Acción', rating: 4.9, img: 'Marvel s Spider-Man 2.jpg', },
+                { title: 'God of War Ragnarök', platform: 'ps5', price: 59.99, genre: 'Acción', rating: 5.0, img: 'God of War Ragnarök.jpg' },
+                { title: 'Demon\'s Souls PS5', platform: 'ps5', price: 49.99, genre: 'RPG', rating: 4.8, img: 'Demon s Souls PS5.jpg' },
+                { title: 'Ratchet & Clank: Rift Apart', platform: 'ps5', price: 49.99, genre: 'Aventura', rating: 4.8, img: 'Ratchet & Clank  Rift Apart.jpg' },
+                { title: 'Returnal', platform: 'ps5', price: 39.99, genre: 'Acción', rating: 4.6, img: 'Returnal.jpg' },
+                { title: 'Horizon Forbidden West', platform: 'ps5', price: 49.99, genre: 'Aventura', rating: 4.8, img: 'Horizon Forbidden West.jpg' },
+                { title: 'Gran Turismo 7', platform: 'ps5', price: 59.99, genre: 'Deportes', rating: 4.7, img: 'Gran Turismo 7.jpg' },
+                { title: 'Final Fantasy XVI', platform: 'ps5', price: 59.99, genre: 'RPG', rating: 4.7, img: 'Final Fantasy XVI.jpg' },
+                { title: 'The Last of Us Part I (Remake)', platform: 'ps5', price: 59.99, genre: 'Aventura', rating: 4.9, img: 'The Last of Us Part I (Remake).jpg' },
+                { title: 'Deathloop', platform: 'ps5', price: 29.99, genre: 'Acción', rating: 4.5, img: 'Deathloop.jpg' },
+                { title: 'Stellar Blade', platform: 'ps5', price: 69.99, genre: 'Acción', rating: 4.8, img: 'Stellar Blade.jpg' },
+                { title: 'Rise of the Ronin', platform: 'ps5', price: 69.99, genre: 'RPG', rating: 4.6, img: 'Rise of the Ronin.jpg' },
+                { title: 'Astro Bot', platform: 'ps5', price: 59.99, genre: 'Aventura', rating: 5.0, img: 'Astro Bot.jpg' },
+                { title: 'Silent Hill 2 Remake', platform: 'ps5', price: 69.99, genre: 'Acción', rating: 4.8, img: 'Silent Hill 2 Remake.jpg' },
+                { title: 'Helldivers 2', platform: 'ps5', price: 39.99, genre: 'Acción', rating: 4.9, img: 'Helldivers 2.jpg' },
+                { title: 'Elden Ring', platform: 'ps5', price: 49.99, genre: 'RPG', rating: 5.0, img: 'Elden Ring.jpg' },
+                { title: 'Resident Evil 4 Remake', platform: 'ps5', price: 49.99, genre: 'Acción', rating: 4.9, img: 'Resident Evil 4 Remake.jpg' },
+                { title: 'Baldur\'s Gate 3', platform: 'ps5', price: 69.99, genre: 'RPG', rating: 5.0, img: 'Baldur Gate 3.jpg' },
+                { title: 'Tekken 8', platform: 'ps5', price: 69.99, genre: 'Acción', rating: 4.8, img: 'Tekken 8.jpg' },
+                { title: 'Dead Space Remake', platform: 'ps5', price: 39.99, genre: 'Acción', rating: 4.7, img: 'Dead Space Remake.jpg' },
+                { title: 'EA Sports FC 25', platform: 'ps5', price: 69.99, genre: 'Deportes', rating: 4.3, img: 'EA Sports FC 25.jpg' },
+                { title: 'Dragon\'s Dogma 2', platform: 'ps5', price: 69.99, genre: 'RPG', rating: 4.5, img: 'Dragon Dogma 2.jpg' },
+                { title: 'Cyberpunk 2077: Phantom Liberty', platform: 'ps5', price: 49.99, genre: 'RPG', rating: 4.8, img: 'Cyberpunk 2077 Phantom Liberty.jpg' },
+                { title: 'Alan Wake 2', platform: 'ps5', price: 59.99, genre: 'Aventura', rating: 4.8, img: 'Alan Wake 2.jpg' },
+                { title: 'Street Fighter 6', platform: 'ps5', price: 49.99, genre: 'Acción', rating: 4.7, img: 'Street Fighter 6.jpg' },
+                { title: 'Mortal Kombat 1', platform: 'ps5', price: 49.99, genre: 'Acción', rating: 4.7, img: 'mortal kombat 1.jpg' },
+                { title: 'marvel wolverine ', platform: 'ps5', price: 69.99, genre: 'Acción / Aventura (Hack and Slash / Combate en tercera persona)', rating: 4.6, img: 'marvel wolverine.jpg' },
+
+                // --- XBOX GAMES (25) ---
+                { title: 'Halo Infinite', platform: 'xbox', price: 39.99, genre: 'Acción', rating: 4.6, img: 'Halo Infinite.jpg', featured: true },
+                { title: 'Forza Horizon 5', platform: 'xbox', price: 49.99, genre: 'Deportes', rating: 4.9, img: 'Forza Horizon 5.jpg' },
+                { title: 'Starfield', platform: 'xbox', price: 69.99, genre: 'RPG', rating: 4.5, img: 'Starfield.jpg' },
+                { title: 'Gears 5', platform: 'xbox', price: 29.99, genre: 'Acción', rating: 4.7, img: 'Gears 5.jpg' },
+                { title: 'Sea of Thieves', platform: 'xbox', price: 29.99, genre: 'Aventura', rating: 4.6, img: 'Sea of Thieves.jpg' },
+                { title: 'Ori and the Will of the Wisps', platform: 'xbox', price: 19.99, genre: 'Aventura', rating: 4.9, img: 'Ori and the Will of the Wisps.jpg' },
+                { title: 'Psychonauts 2', platform: 'xbox', price: 29.99, genre: 'Aventura', rating: 4.8, img: 'Psychonauts 2.jpg' },
+                { title: 'Senua\'s Saga: Hellblade II', platform: 'xbox', price: 49.99, genre: 'Aventura', rating: 4.7, img: 'Senua Saga Hellblade II.jpg' },
+                { title: 'Forza Motorsport', platform: 'xbox', price: 59.99, genre: 'Deportes', rating: 4.5, img: 'Forza Motorsport.jpg' },
+                { title: 'Flight Simulator 2024', platform: 'xbox', price: 69.99, genre: 'Deportes', rating: 4.8, img: 'Flight Simulator 2024.jpg' },
+                { title: 'State of Decay 2', platform: 'xbox', price: 19.99, genre: 'Acción', rating: 4.4, img: 'State of Decay 2.jpg' },
+                { title: 'Hi-Fi RUSH', platform: 'xbox', price: 29.99, genre: 'Acción', rating: 4.9, img: 'Hi-Fi RUSH.jpg' },
+                { title: 'Grounded', platform: 'xbox', price: 29.99, genre: 'Aventura', rating: 4.6, img: 'Grounded.jpg' },
+                { title: 'Fable Anniversary', platform: 'xbox', price: 14.99, genre: 'RPG', rating: 4.6, img: 'Fable Anniversary.jpg' },
+                { title: 'Quantum Break', platform: 'xbox', price: 19.99, genre: 'Acción', rating: 4.4, img: 'Quantum Break.jpg' },
+                { title: 'Sunset Overdrive', platform: 'xbox', price: 14.99, genre: 'Acción', rating: 4.5, img: 'Sunset Overdrive.jpg' },
+                { title: 'Palworld', platform: 'xbox', price: 29.99, genre: 'Aventura', rating: 4.6, img: 'Palworld.jpg' },
+                { title: 'Diablo IV', platform: 'xbox', price: 49.99, genre: 'RPG', rating: 4.5, img: 'Diablo IV.jpg' },
+                { title: 'Doom Eternal', platform: 'xbox', price: 29.99, genre: 'Acción', rating: 4.8, img: 'Doom Eternal.jpg' },
+                { title: 'Minecraft Legends', platform: 'xbox', price: 29.99, genre: 'Aventura', rating: 4.3, img: 'Minecraft Legends.jpg' },
+                { title: 'Call of Duty: Black Ops 6', platform: 'xbox', price: 69.99, genre: 'Acción', rating: 4.7, img: 'Call of Duty Black Ops 6.jpg' },
+                { title: 'Avowed', platform: 'xbox', price: 69.99, genre: 'RPG', rating: 4.6, img: 'Avowed.jpg' },
+                { title: 'STALKER 2', platform: 'xbox', price: 59.99, genre: 'Acción', rating: 4.6, img: 'STALKER 2.jpg' },
+                { title: 'Dead Rising Deluxe Remaster', platform: 'xbox', price: 49.99, genre: 'Acción', rating: 4.5, img: 'Dead Rising Deluxe Remaster.jpg' },
+                { title: 'Lies of P', platform: 'xbox', price: 49.99, genre: 'RPG', rating: 4.8, img: 'Lies of P.jpg' },
+
+                // --- NINTENDO SWITCH GAMES (25) ---
+                { title: 'Zelda: Tears of the Kingdom', platform: 'switch', price: 69.99, genre: 'Aventura', rating: 5.0, img: 'Zelda Tears of the Kingdom.jpg', featured: true },
+                { title: 'Super Mario Odyssey', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 4.9, img: 'Super Mario Odyssey.jpg' },
+                { title: 'Super Smash Bros. Ultimate', platform: 'switch', price: 59.99, genre: 'Acción', rating: 4.9, img: 'Super Smash Bros. Ultimate.jpg' },
+                { title: 'Mario Kart 8 Deluxe', platform: 'switch', price: 59.99, genre: 'Deportes', rating: 4.9, img: 'Mario Kart 8 Deluxe.jpg' },
+                { title: 'Pokémon Scarlet / Violet', platform: 'switch', price: 59.99, genre: 'RPG', rating: 4.4, img: 'Pokémon Scarlet  Violet.jpg' },
+                { title: 'Metroid Dread', platform: 'switch', price: 49.99, genre: 'Acción', rating: 4.8, img: 'Metroid Dread.jpg' },
+                { title: 'Animal Crossing: New Horizons', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 4.8, img: 'Animal Crossing  New Horizons.jpg' },
+                { title: 'Splatoon 3', platform: 'switch', price: 59.99, genre: 'Acción', rating: 4.7, img: 'Splatoon 3.jpg' },
+                { title: 'Luigi\'s Mansion 3', platform: 'switch', price: 49.99, genre: 'Aventura', rating: 4.8, img: 'Luigi Mansion 3.jpg' },
+                { title: 'Zelda: Breath of the Wild', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 5.0, img: 'Zelda Breath of the Wild.jpg' },
+                { title: 'Xenoblade Chronicles 3', platform: 'switch', price: 59.99, genre: 'RPG', rating: 4.8, img: 'Xenoblade Chronicles 3.jpg' },
+                { title: 'Fire Emblem: Engage', platform: 'switch', price: 49.99, genre: 'RPG', rating: 4.6, img: 'Fire Emblem Engage.jpg' },
+                { title: 'Kirby and the Forgotten Land', platform: 'switch', price: 49.99, genre: 'Aventura', rating: 4.8, img: 'Kirby and the Forgotten Land.jpg' },
+                { title: 'Super Mario Bros. Wonder', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 4.9, img: 'Super Mario Bros. Wonder.jpg' },
+                { title: 'Pikmin 4', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 4.8, img: 'Pikmin 4.jpg' },
+                { title: 'Paper Mario: The Thousand-Year Door', platform: 'switch', price: 59.99, genre: 'RPG', rating: 4.9, img: 'Paper Mario The Thousand-Year Door.jpg' },
+                { title: 'Mario Party Superstars', platform: 'switch', price: 59.99, genre: 'Acción', rating: 4.7, img: 'Mario Party Superstars.jpg' },
+                { title: 'Metroid Prime Remastered', platform: 'switch', price: 39.99, genre: 'Acción', rating: 4.9, img: 'Metroid Prime Remastered.jpg' },
+                { title: 'Bayonetta 3', platform: 'switch', price: 49.99, genre: 'Acción', rating: 4.6, img: 'Bayonetta 3.jpg' },
+                { title: 'Monster Hunter Rise', platform: 'switch', price: 29.99, genre: 'RPG', rating: 4.7, img: 'Monster Hunter Rise.jpg' },
+                { title: 'Triangle Strategy', platform: 'switch', price: 39.99, genre: 'RPG', rating: 4.5, img: 'Triangle Strategy.jpg' },
+                { title: 'Astral Chain', platform: 'switch', price: 49.99, genre: 'Acción', rating: 4.7, img: 'Astral Chain.jpg' },
+                { title: 'Donkey Kong Country: Tropical Freeze', platform: 'switch', price: 49.99, genre: 'Aventura', rating: 4.8, img: 'Donkey Kong Country  Tropical Freeze.jpg' },
+                { title: 'Princess Peach: Showtime!', platform: 'switch', price: 59.99, genre: 'Aventura', rating: 4.4, img: 'Princess Peach  Showtime.jpg' },
+                { title: 'Nintendo Switch Sports', platform: 'switch', price: 39.99, genre: 'Deportes', rating: 4.3, img: 'Nintendo Switch Sports.jpg' }
+            ];
+
+            return rawGames.map((g, idx) => ({
+                id: `game-${idx + 1}`,
+                title: g.title,
+                platform: g.platform,
+                price: g.price,
+                genre: g.genre,
+                rating: g.rating,
+                image: g.img,
+                featured: !!g.featured,
+                synopsis: `Obra maestra aclamada mundialmente para la plataforma ${g.platform.toUpperCase()}. Disfruta de una jugabilidad apasionante, gráficos deslumbrantes y banda sonora envolvente.`
+            }));
+        }
+
+        const gamesDatabase = generateGamesDataset();
+
+        // Application State
+        let favorites = JSON.parse(localStorage.getItem('gu_favorites') || '[]');
+        let cart = JSON.parse(localStorage.getItem('gu_cart') || '[]');
+        let currentUser = JSON.parse(localStorage.getItem('gu_user') || 'null');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAllSections();
+            updateAuthUI();
+            updateCartUI();
+        });
+
+        // Navigation
+        function switchTab(tabId) {
+            const views = ['hero', 'ps4', 'ps5', 'xbox', 'switch', 'games', 'videos'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+            });
+            const active = document.getElementById(`view-${tabId}`);
+            if (active) active.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Render Cards with Fallback Support
+        function createGameCard(game) {
+            const isFav = favorites.includes(game.id);
+            const inCart = cart.some(c => c.id === game.id);
+            const badgeColors = {
+                ps4: 'bg-blue-900/80 text-blue-300 border-blue-600/50',
+                ps5: 'bg-cyan-900/80 text-cyan-300 border-cyan-600/50',
+                xbox: 'bg-green-900/80 text-green-300 border-green-600/50',
+                switch: 'bg-red-900/80 text-red-300 border-red-600/50'
+            };
+
+            return `
+                <div class="bg-darkCard rounded-2xl border border-gray-800 hover:border-gray-600 transition duration-300 flex flex-col overflow-hidden group shadow-lg">
+                    <div class="relative h-44 overflow-hidden bg-gray-900">
+                        <img src="${game.image}" alt="${game.title}" onerror="this.onerror=null;this.src='${DEFAULT_FALLBACK_IMG}';" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <span class="absolute top-2.5 left-2.5 px-2 py-0.5 text-[10px] font-black rounded border ${badgeColors[game.platform]} uppercase tracking-wider backdrop-blur-md">
+                            ${game.platform}
+                        </span>
+                        <button onclick="toggleFavorite('${game.id}', event)" class="absolute top-2.5 right-2.5 w-7 h-7 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition">
+                            <i class="fa-${isFav ? 'solid text-red-500' : 'regular text-gray-300'} fa-heart text-xs"></i>
+                        </button>
+                    </div>
+                    <div class="p-4 flex-grow flex flex-col justify-between space-y-3">
+                        <div>
+                            <div class="flex justify-between items-center text-[11px] text-gray-400 mb-1">
+                                <span>${game.genre}</span>
+                                <span class="text-yellow-400 font-bold"><i class="fa-solid fa-star text-[10px] mr-0.5"></i>${game.rating}</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-white group-hover:text-cyan-400 transition leading-snug line-clamp-2">${game.title}</h3>
+                        </div>
+                        <div class="pt-2 border-t border-gray-800/80 flex items-center justify-between gap-2">
+                            <span class="text-base font-black text-white">$${game.price.toFixed(2)}</span>
+                            <div class="flex gap-1">
+                                <button onclick="addToCart('${game.id}', event)" class="p-2 rounded-lg ${inCart ? 'bg-green-600 text-white' : 'bg-cyan-500 hover:bg-cyan-400 text-black'} font-bold transition text-xs">
+                                    <i class="fa-solid ${inCart ? 'fa-check' : 'fa-cart-plus'}"></i>
+                                </button>
+                                <button onclick="openGameModal('${game.id}')" class="px-2.5 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 text-gray-200 text-xs font-semibold">
+                                    Detalles
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render Grids
+        function renderAllSections() {
+            document.getElementById('featured-games-grid').innerHTML = gamesDatabase.filter(g => g.featured).map(g => createGameCard(g)).join('');
+            document.getElementById('ps4-games-grid').innerHTML = gamesDatabase.filter(g => g.platform === 'ps4').map(g => createGameCard(g)).join('');
+            document.getElementById('ps5-games-grid').innerHTML = gamesDatabase.filter(g => g.platform === 'ps5').map(g => createGameCard(g)).join('');
+            document.getElementById('xbox-games-grid').innerHTML = gamesDatabase.filter(g => g.platform === 'xbox').map(g => createGameCard(g)).join('');
+            document.getElementById('switch-games-grid').innerHTML = gamesDatabase.filter(g => g.platform === 'switch').map(g => createGameCard(g)).join('');
+            document.getElementById('all-games-grid').innerHTML = gamesDatabase.map(g => createGameCard(g)).join('');
+        }
+
+        // Advanced Filter Engine
+        function applyAdvancedFilters() {
+            const platform = document.getElementById('filter-platform').value;
+            const price = document.getElementById('filter-price').value;
+            const genre = document.getElementById('filter-genre').value;
+
+            let results = gamesDatabase;
+
+            if (platform !== 'all') results = results.filter(g => g.platform === platform);
+            if (genre !== 'all') results = results.filter(g => g.genre === genre);
+
+            if (price === 'under20') results = results.filter(g => g.price < 20);
+            else if (price === '20to40') results = results.filter(g => g.price >= 20 && g.price <= 40);
+            else if (price === 'over40') results = results.filter(g => g.price > 40);
+
+            document.getElementById('all-games-grid').innerHTML = results.length > 0 
+                ? results.map(g => createGameCard(g)).join('')
+                : `<div class="col-span-full py-12 text-center text-gray-400">No se encontraron juegos con los filtros seleccionados.</div>`;
+        }
+
+        // Live Search Handler
+        function handleSearch(query) {
+            if (!query.trim()) {
+                renderAllSections();
+                return;
+            }
+            switchTab('games');
+            const clean = query.toLowerCase();
+            const filtered = gamesDatabase.filter(g => g.title.toLowerCase().includes(clean) || g.genre.toLowerCase().includes(clean) || g.platform.toLowerCase().includes(clean));
+            document.getElementById('all-games-grid').innerHTML = filtered.length > 0
+                ? filtered.map(g => createGameCard(g)).join('')
+                : `<div class="col-span-full py-12 text-center text-gray-400">No hay resultados para "${query}"</div>`;
+        }
+
+        // Favorites
+        function toggleFavorite(id, event) {
+            if(event) event.stopPropagation();
+            if (favorites.includes(id)) {
+                favorites = favorites.filter(f => f !== id);
+                showToast("Quitado de favoritos");
+            } else {
+                favorites.push(id);
+                showToast("¡Añadido a tus favoritos!");
+            }
+            localStorage.setItem('gu_favorites', JSON.stringify(favorites));
+            renderAllSections();
+        }
+
+        // Cart Actions
+        function addToCart(id, event) {
+            if(event) event.stopPropagation();
+            const game = gamesDatabase.find(g => g.id === id);
+            if (!game) return;
+
+            if (!cart.some(c => c.id === id)) {
+                cart.push(game);
+                localStorage.setItem('gu_cart', JSON.stringify(cart));
+                showToast(`"${game.title}" añadido al carrito`);
+                updateCartUI();
+                renderAllSections();
+            } else {
+                showToast("El juego ya está en el carrito");
+            }
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(c => c.id !== id);
+            localStorage.setItem('gu_cart', JSON.stringify(cart));
+            updateCartUI();
+            renderAllSections();
+            showToast("Juego eliminado del carrito");
+        }
+
+        function updateCartUI() {
+            document.getElementById('cart-badge').textContent = cart.length;
+            const cartItemsEl = document.getElementById('cart-items');
+            
+            if (cart.length === 0) {
+                cartItemsEl.innerHTML = `<div class="text-center py-12 text-gray-400 text-xs">Tu carrito está vacío.</div>`;
+                document.getElementById('cart-total').textContent = "$0.00";
+                return;
+            }
+
+            let total = 0;
+            cartItemsEl.innerHTML = cart.map(item => {
+                total += item.price;
+                return `
+                    <div class="flex items-center justify-between bg-gray-900/80 p-3 rounded-xl border border-gray-800">
+                        <div class="flex items-center space-x-3">
+                            <img src="${item.image}" onerror="this.onerror=null;this.src='${DEFAULT_FALLBACK_IMG}';" class="w-12 h-12 object-cover rounded-lg">
+                            <div>
+                                <h4 class="text-xs font-bold text-white leading-tight">${item.title}</h4>
+                                <span class="text-[10px] text-cyan-400 uppercase font-semibold">${item.platform}</span>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            <span class="text-xs font-black text-white">$${item.price.toFixed(2)}</span>
+                            <button onclick="removeFromCart('${item.id}')" class="text-gray-500 hover:text-red-400 text-xs">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('cart-total').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function checkoutCart() {
+            if(cart.length === 0) return showToast("El carrito está vacío");
+            cart = [];
+            localStorage.setItem('gu_cart', JSON.stringify(cart));
+            updateCartUI();
+            closeCartModal();
+            renderAllSections();
+            showToast("¡Compra procesada con éxito! Gracias por tu orden.");
+        }
+
+        function openCartModal() { document.getElementById('cart-modal').classList.remove('hidden'); }
+        function closeCartModal() { document.getElementById('cart-modal').classList.add('hidden'); }
+
+        // Game Modal Details
+        function openGameModal(id) {
+            const game = gamesDatabase.find(g => g.id === id);
+            if(!game) return;
+
+            const isFav = favorites.includes(game.id);
+            const content = document.getElementById('modal-content');
+            content.innerHTML = `
+                <div class="relative h-60">
+                    <img src="${game.image}" onerror="this.onerror=null;this.src='${DEFAULT_FALLBACK_IMG}';" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-darkCard via-transparent to-transparent"></div>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="px-3 py-1 rounded text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 uppercase">${game.platform}</span>
+                        <span class="text-yellow-400 font-bold text-xs"><i class="fa-solid fa-star mr-1"></i>${game.rating} / 5.0</span>
+                    </div>
+                    <h2 class="text-2xl font-black text-white leading-snug">${game.title}</h2>
+                    <p class="text-gray-300 text-xs leading-relaxed">${game.synopsis}</p>
+                    <div class="flex items-center justify-between pt-2">
+                        <div>
+                            <span class="text-xs text-gray-400 block">Precio Oficial:</span>
+                            <span class="text-2xl font-black text-cyan-400">$${game.price.toFixed(2)}</span>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="addToCart('${game.id}')" class="px-4 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-black font-bold text-xs">
+                                <i class="fa-solid fa-cart-plus mr-1"></i> Comprar Ahora
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('game-modal').classList.remove('hidden');
+        }
+
+        function closeGameModal() { document.getElementById('game-modal').classList.add('hidden'); }
+
+        // Auth Systems
+        function openAuthModal() { document.getElementById('auth-modal').classList.remove('hidden'); }
+        function closeAuthModal() { document.getElementById('auth-modal').classList.add('hidden'); }
+
+        function switchAuthMode(mode) {
+            const loginTab = document.getElementById('auth-tab-login');
+            const regTab = document.getElementById('auth-tab-register');
+            const formLogin = document.getElementById('form-login');
+            const formReg = document.getElementById('form-register');
+
+            if (mode === 'login') {
+                loginTab.className = 'flex-1 py-3 font-bold text-cyan-400 border-b-2 border-cyan-400 text-center text-sm';
+                regTab.className = 'flex-1 py-3 font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-200 text-center text-sm';
+                formLogin.classList.remove('hidden');
+                formReg.classList.add('hidden');
+            } else {
+                regTab.className = 'flex-1 py-3 font-bold text-purple-400 border-b-2 border-purple-400 text-center text-sm';
+                loginTab.className = 'flex-1 py-3 font-bold text-gray-400 border-b-2 border-transparent hover:text-gray-200 text-center text-sm';
+                formReg.classList.remove('hidden');
+                formLogin.classList.add('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-user').value;
+            currentUser = { name: username };
+            localStorage.setItem('gu_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`Bienvenido de nuevo, ${username}`);
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-user').value;
+            currentUser = { name: username };
+            localStorage.setItem('gu_user', JSON.stringify(currentUser));
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`Cuenta registrada para ${username}`);
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('gu_user');
+            updateAuthUI();
+            showToast("Sesión cerrada");
+        }
+
+        function updateAuthUI() {
+            const container = document.getElementById('auth-container');
+            if (currentUser) {
+                container.innerHTML = `
+                    <div class="flex items-center space-x-2 bg-gray-900 border border-gray-700 px-3 py-1.5 rounded-full">
+                        <div class="w-6 h-6 rounded-full bg-cyan-500 text-black font-black text-xs flex items-center justify-center">
+                            ${currentUser.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span class="text-xs font-bold text-white">${currentUser.name}</span>
+                        <button onclick="logout()" class="text-gray-400 hover:text-red-400 text-xs ml-1">
+                            <i class="fa-solid fa-right-from-bracket"></i>
+                        </button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <button onclick="openAuthModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-cyan-500 hover:bg-cyan-400 text-black transition flex items-center space-x-1.5">
+                        <i class="fa-solid fa-user"></i>
+                        <span>Ingresar</span>
+                    </button>
+                `;
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
